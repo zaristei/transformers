@@ -24,7 +24,7 @@ import typing
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, TypedDict, Union
+from typing import Any, Optional, TypedDict, TypeVar, Union
 
 import numpy as np
 import typing_extensions
@@ -68,6 +68,9 @@ from .utils.deprecation import deprecate_kwarg
 
 
 logger = logging.get_logger(__name__)
+
+# type hinting: specifying the type of processor class that inherits from ProcessorMixin
+SpecificProcessorType = TypeVar("SpecificProcessorType", bound="ProcessorMixin")
 
 # Dynamically import the Transformers module to grab the attribute classes of the processor from their names.
 transformers_module = direct_transformers_import(Path(__file__).parent)
@@ -1163,7 +1166,7 @@ class ProcessorMixin(PushToHubMixin):
 
     @classmethod
     def from_pretrained(
-        cls,
+        cls: type[SpecificProcessorType],
         pretrained_model_name_or_path: Union[str, os.PathLike],
         cache_dir: Optional[Union[str, os.PathLike]] = None,
         force_download: bool = False,
@@ -1171,7 +1174,7 @@ class ProcessorMixin(PushToHubMixin):
         token: Optional[Union[str, bool]] = None,
         revision: str = "main",
         **kwargs,
-    ):
+    ) -> SpecificProcessorType:
         r"""
         Instantiate a processor associated with a pretrained model.
 
